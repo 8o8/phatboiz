@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chunky Monkeys</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+    <style>
+        body {
+            display: flow;
+            justify-content: center;
+            align-items: center;
+            /*height: 90vh;*/
+            /*width: 90vw;*/
+        }
+
+        .chart {
+            height: 40vh;
+            width: 40vw;
+        }
+    </style>
+</head>
+<body>
+
+<div class="chart">
+    <canvas id="mass-chart"></canvas>
+</div>
+
+<div class="chart">
+    <canvas id="bmi-chart"></canvas>
+</div>
+
+
+<script>
+    const massChart = document.getElementById("mass-chart");
+    const bmiChart = document.getElementById("bmi-chart");
+
+    const borderColours = {
+        red: 'rgb(255, 99, 132)',
+        orange: 'rgb(255, 159, 64)',
+        yellow: 'rgb(255, 205, 86)',
+        green: 'rgb(75, 192, 192)',
+        blue: 'rgb(54, 162, 235)',
+        purple: 'rgb(153, 102, 255)',
+        grey: 'rgb(201, 203, 207)'
+    }
+
+    const backgroundColours = {
+        red: 'rgba(255, 99, 132, 0.7)',
+        orange: 'rgba(255, 159, 64, 0.7)',
+        yellow: 'rgba(255, 205, 86, 0.7)',
+        green: 'rgba(75, 192, 192, 0.7)',
+        blue: 'rgba(54, 162, 235, 0.7)',
+        purple: 'rgba(153, 102, 255, 0.7)',
+        grey: 'rgba(201, 203, 207, 0.7)'
+    }
+
+    // Mikey
+    let kg = [98.1] // <-- set initial weight then each weight added as comma-separated values
+    const mikeyMass = new massFraction("M", "orange", kg)
+    const mikeyBMI = new bmi("M", "orange", kg, 1.85) // <-- set your height in metres here
+
+    // Ben
+    kg = [98.1]
+    const benMass = new massFraction("B", "blue", kg)
+    const benBMI = new bmi("MonoKankle", "yellow", kg, 1.85) // set ben's height here
+
+    // can add same block as above for new competitors
+
+    const numWeeks = 20 // <-- total weeks (or plot points)
+
+    const chartMass = new Chart(massChart, {
+        type: 'line',
+        data: {
+            labels: function () {
+                let weeks = [];
+                for (let w = 0; w <= numWeeks; w++) {
+                    weeks.push(w)
+                }
+                return weeks
+            }(),
+            datasets: [mikeyMass, benMass]
+        },
+        options: {
+            responsive: true,
+            title: {
+                display: true,
+                text: 'ChubDex',
+                fontSize: 18
+            },
+            scales: {
+                xAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: "Week"
+                    }
+                }],
+                yAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: "ChubDex"
+                    },
+                    ticks: {
+                        beginAtZero: false
+                    }
+                }]
+            }
+        }
+    });
+
+    const chartBMI = new Chart(bmiChart, {
+        type: 'line',
+        data: {
+            labels: function () {
+                let weeks = [];
+                for (let w = 0; w <= numWeeks; w++) {
+                    weeks.push(w)
+                }
+                return weeks
+            }(),
+            datasets: [mikeyBMI, benBMI]
+        },
+        options: {
+            responsive: true,
+            title: {
+                display: true,
+                text: 'BMI',
+                fontSize: 18
+            },
+            scales: {
+                xAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: "Week"
+                    }
+                }],
+                yAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: "BMI"
+                    },
+                    ticks: {
+                        beginAtZero: false
+                    }
+                }]
+            }
+        }
+    });
+
+
+    function massFraction(label, colour, raw) {
+
+        this.label = label
+        this.borderColor = borderColours[colour]
+        this.backgroundColor = backgroundColours[colour]
+        this.borderWidth = 3
+        this.fill = false
+        this.data = []
+
+        // calculate data as percentages of first value
+        for (let i = 0; i < raw.length; i++) {
+            this.data[i] = raw[i] / raw[0]
+        }
+    }
+
+    function bmi(label, colour, raw, metres) {
+
+        this.label = label
+        this.borderColor = borderColours[colour]
+        this.backgroundColor = backgroundColours[colour]
+        this.borderWidth = 3
+        this.fill = false
+        this.data = []
+
+        // calculate data as percentages of first value
+        for (let i = 0; i < raw.length; i++) {
+            this.data[i] = raw[i] / metres ** 2
+        }
+    }
+
+
+</script>
+
+</body>
+</html>
